@@ -471,6 +471,71 @@ public class SchoolCCARegistrationSystem {
 				+ " rejected.");
 	}
 
+	private static void deleteRegistrations(Student student) {
+		List<RegisteredActivity> registrations = student.getRegisteredActivities();
+		if (!registrations.isEmpty()) {
+			System.out.println("Your registered activities:");
+			for (int i = 0; i < registrations.size(); i++) {
+				RegisteredActivity registeredActivity = registrations.get(i);
+				String approvalStatusBeforeDelete = registeredActivity.getApprovalStatus();
+				CCA_Activity activity = registeredActivity.getActivity();
+				System.out.println(
+						i + ": Activity: " + activity.getName() + " Approval Status: " + approvalStatusBeforeDelete);
+			}
+
+			int indexToDelete = Helper.readInt("Enter the index of the registration to delete: ");
+			if (indexToDelete >= 0 && indexToDelete < registrations.size()) {
+				RegisteredActivity registrationToDelete = registrations.get(indexToDelete);
+				String approvalStatus = registrationToDelete.getApprovalStatus();
+				if (approvalStatus.equalsIgnoreCase("Pending") || approvalStatus.equalsIgnoreCase("Rejected")) {
+					registrations.remove(indexToDelete);
+					System.out.println("Registration deleted.");
+				} else {
+					System.out.println("You can only delete registrations with 'Pending' or 'Rejected' status.");
+				}
+			} else {
+				System.out.println("Invalid index.");
+			}
+		} else {
+			System.out.println("You have no registered activities.");
+		}
+	}
+
+	private static void viewApprovedAndRejectedApplications(ArrayList<User> userList) {
+		if (viewStudentApplicationsNotPending(userList)) {
+			int studentIndex = Helper.readInt("Enter the index of the student to view applications: ");
+			if (studentIndex >= 0 && studentIndex < userList.size()) {
+				User selectedUser = userList.get(studentIndex);
+				if (selectedUser instanceof Student) {
+					Student student = (Student) selectedUser;
+					List<RegisteredActivity> registrations = student.getRegisteredActivities();
+					if (!registrations.isEmpty()) {
+						System.out.println("Approved and Rejected Applications for " + student.getUsername() + ":");
+						for (int i = 0; i < registrations.size(); i++) {
+							RegisteredActivity registeredActivity = registrations.get(i);
+							String approvalStatus = registeredActivity.getApprovalStatus();
+							if (approvalStatus.equalsIgnoreCase("Approved")
+									|| approvalStatus.equalsIgnoreCase("Rejected")) {
+								CCA_Activity activity = registeredActivity.getActivity();
+								System.out.println(i + ":");
+								System.out.println("    Activity: " + activity.getName());
+								System.out.println("    Approval Status: " + approvalStatus);
+							}
+						}
+					} else {
+						System.out.println(student.getUsername() + " has no registered activities.");
+					}
+				} else {
+					System.out.println("Selected user is not a student.");
+				}
+			} else {
+				System.out.println("Invalid student index.");
+			}
+		} else {
+			System.out.println("There are no approved or rejected applications");
+		}
+	}
+
 	// =============================================================== Extra methods
 	// to make the main code a bit easier to read
 	// ===============================================================
@@ -479,7 +544,7 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 6) {
+		while (option != 7) {
 
 			displayMenu(student);
 			option = Helper.readInt("Enter an option > ");
@@ -509,6 +574,11 @@ public class SchoolCCARegistrationSystem {
 				registerForActivities(student, activityList);
 
 			} else if (option == 6) {
+				// Delete registrations
+				setHeader("Delete Registrations");
+				deleteRegistrations(student);
+
+			} else if (option == 7) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -523,7 +593,7 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 12) {
+		while (option != 13) {
 
 			displayMenu(teacher);
 			option = Helper.readInt("Enter an option > ");
@@ -567,11 +637,11 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 10) {
 				// View current student registrations
+				setHeader("View current student Registrations");
 				boolean hasPendingApplications = viewStudentApplications(userList);
 
 				if (hasPendingApplications) {
-					setHeader("View current student Registrations");
-					viewStudentApplications(userList);
+
 				} else {
 					System.out.println("No students have pending applications.");
 				}
@@ -633,7 +703,13 @@ public class SchoolCCARegistrationSystem {
 				} else {
 					System.out.println("No students have pending applications.");
 				}
+
 			} else if (option == 12) {
+				// View approved and rejected applications
+				setHeader("View Approved and Rejected Applications");
+				viewApprovedAndRejectedApplications(userList);
+
+			} else if (option == 13) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -781,7 +857,8 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("3. View attendance by CCA");
 		System.out.println("4. View registered activities");
 		System.out.println("5. Register for an activity");
-		System.out.println("6. Log Out");
+		System.out.println("6. Delete Registrations");
+		System.out.println("7. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -798,7 +875,8 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("9. Delete attendance");
 		System.out.println("10. View current student registrations");
 		System.out.println("11. Approve or Reject Student Registration");
-		System.out.println("12. Log Out");
+		System.out.println("12. View Approved and Rejected Applications");
+		System.out.println("13. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -953,6 +1031,27 @@ public class SchoolCCARegistrationSystem {
 			}
 		}
 		return hasPendingApplications;
+	}
+
+	private static boolean viewStudentApplicationsNotPending(ArrayList<User> userList) {
+		boolean hasNotPendingApplications = false;
+		System.out.println("List of Students with Approved or Rejected Applications:");
+		for (User user : userList) {
+			if (user instanceof Student) {
+				Student student = (Student) user;
+				if (!student.getRegisteredActivities().isEmpty()) {
+					for (RegisteredActivity registeredActivity : student.getRegisteredActivities()) {
+						String approvalStatus = registeredActivity.getApprovalStatus();
+						if ((approvalStatus.equalsIgnoreCase("Approved"))
+								|| (approvalStatus.equalsIgnoreCase("Rejected"))) {
+							hasNotPendingApplications = true;
+							System.out.println(userList.indexOf(user) + ": " + student.getUsername());
+						}
+					}
+				}
+			}
+		}
+		return hasNotPendingApplications;
 	}
 
 	private static ArrayList<RegisteredActivity> getPendingApplications(Student student) {
