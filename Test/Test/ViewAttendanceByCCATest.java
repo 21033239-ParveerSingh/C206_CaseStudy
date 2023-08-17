@@ -28,7 +28,7 @@ public class ViewAttendanceByCCATest {
 	@Test
 	public void testViewAttendanceForCCAWithNoEntries() {
 		ArrayList<CCA_Activity> activityList = new ArrayList<>();
-		// Create and add CCA_Activity objects without attendance entries
+
 		CCA_Activity cca2 = new CCA_Activity("Football Club");
 		activityList.add(cca2);
 
@@ -38,7 +38,7 @@ public class ViewAttendanceByCCATest {
 	@Test
     public void testViewAttendanceForNonExistentCCA() {
         ArrayList<CCA_Activity> activityList = new ArrayList<>();
-        // Create and add CCA_Activity objects with different names
+
         CCA_Activity cca3 = new CCA_Activity("Music Club");
         activityList.add(cca3);
 
