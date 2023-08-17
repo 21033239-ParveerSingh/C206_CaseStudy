@@ -93,7 +93,10 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	// Option 2 Add new activity (CRUD - Create)
-	public static void addActivity(ArrayList<CCA_Activity> activityList, String ccaName) {
+	public static void addActivity(ArrayList<CCA_Activity> activityList) {
+		setHeader("Add an Activity");
+
+		String ccaName = Helper.readString("Enter a new CCA activity name > ");
 
 		for (CCA_Activity activityName : activityList) {
 			if (ccaName.equalsIgnoreCase(activityName.getName())) {
@@ -126,6 +129,7 @@ public class SchoolCCARegistrationSystem {
 	// ===================== Time Slots =====================
 
 	public static void viewAllTimeSlots(ArrayList<CCA_Activity> activityList) {
+		setHeader("View All Time Slots");
 		for (CCA_Activity activityName : activityList) {
 			System.out.println("Time Slots for " + activityName.getName() + ":");
 			List<TimeSlot> timeSlots = activityName.getTimeSlots();
@@ -141,6 +145,7 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static void addTimeSlots(ArrayList<CCA_Activity> activityList) {
+		setHeader("Manage Time Slots");
 		viewAllActivities(activityList);
 		Helper.line(80, "-");
 		String ccaName = Helper.readString("Enter the name of the activity to add a time slot for: ");
@@ -188,6 +193,7 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static void deleteTimeSlot(ArrayList<CCA_Activity> activityList) {
+		setHeader("Delete Time Slot");
 		viewAllActivities(activityList);
 		Helper.line(80, "-");
 		String ccaName = Helper.readString("Enter the name of the activity to delete a time slot from: ");
@@ -195,6 +201,7 @@ public class SchoolCCARegistrationSystem {
 
 		if (selectedActivity != null) {
 			setHeader("Delete Time Slot for " + selectedActivity.getName());
+
 			viewAllTimeSlots(activityList);
 			Helper.line(80, "-");
 			String startTime = Helper.readString("Enter start time of the time slot to delete (HH:mm): ");
@@ -474,7 +481,7 @@ public class SchoolCCARegistrationSystem {
 				+ " rejected.");
 	}
 
-	public static void deleteRegistrations(Student student) {
+	private static void deleteRegistrations(Student student) {
 		List<RegisteredActivity> registrations = student.getRegisteredActivities();
 		if (!registrations.isEmpty()) {
 			System.out.println("Your registered activities:");
@@ -504,7 +511,7 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
-	public static void viewApprovedAndRejectedApplications(ArrayList<User> userList) {
+	private static void viewApprovedAndRejectedApplications(ArrayList<User> userList) {
 		if (viewStudentApplicationsNotPending(userList)) {
 			int studentIndex = Helper.readInt("Enter the index of the student to view applications: ");
 			if (studentIndex >= 0 && studentIndex < userList.size()) {
@@ -557,7 +564,6 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 2) {
 				// View all time slots
-				setHeader("View All Time Slots");
 				viewAllTimeSlots(activityList);
 
 			} else if (option == 3) {
@@ -607,9 +613,7 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 2) {
 				// Add a new item
-				setHeader("Add an Activity");
-				String ccaName = Helper.readString("Enter a new CCA activity name > ");
-				addActivity(activityList, ccaName);
+				addActivity(activityList);
 
 			} else if (option == 3) {
 				// Delete activity
@@ -617,17 +621,14 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 4) {
 				// View all time slots
-				setHeader("View All Time Slots");
 				viewAllTimeSlots(activityList);
 
 			} else if (option == 5) {
 				// Manage time slots
-				setHeader("Manage Time Slots");
 				addTimeSlots(activityList);
 
 			} else if (option == 6) {
 				// Delete time slot
-				setHeader("Delete Time Slot");
 				deleteTimeSlot(activityList);
 
 			} else if (option == 7) {
@@ -743,9 +744,7 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 2) {
 				// Add a new item
-				setHeader("Add an Activity");
-				String ccaName = Helper.readString("Enter a new CCA activity name > ");
-				addActivity(activityList, ccaName);
+				addActivity(activityList);
 
 			} else if (option == 3) {
 				// Delete activity
@@ -753,17 +752,14 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 4) {
 				// View all time slots
-				setHeader("View All Time Slots");
 				viewAllTimeSlots(activityList);
 
 			} else if (option == 5) {
 				// Manage time slots
-				setHeader("Manage Time Slots");
 				addTimeSlots(activityList);
 
 			} else if (option == 6) {
 				// Delete time slot
-				setHeader("Delete Time Slot");
 				deleteTimeSlot(activityList);
 
 			} else if (option == 7) {

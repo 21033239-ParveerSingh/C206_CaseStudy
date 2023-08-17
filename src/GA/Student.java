@@ -31,20 +31,4 @@ public class Student extends User {
 		}
 		return false;
 	}
-
-	public boolean deleteRegistration(CCA_Activity activity, TimeSlot timeSlot) {
-		RegisteredActivity registrationToRemove = null;
-		for (RegisteredActivity registration : registeredActivities) {
-			if (registration.getActivity().equals(activity) && registration.getTimeSlot().equals(timeSlot)) {
-				registrationToRemove = registration;
-				break;
-			}
-		}
-
-		if (registrationToRemove != null) {
-			registeredActivities.remove(registrationToRemove);
-			return true;
-		}
-		return false;
-	}
 }

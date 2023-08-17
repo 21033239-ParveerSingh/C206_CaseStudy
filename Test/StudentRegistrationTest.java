@@ -26,7 +26,7 @@ public class StudentRegistrationTest {
 
 	@Test
 	public void testStudentDeleteRegistration() {
-		// Create a student
+		
 		Student student = new Student("student1");
 
 		CCA_Activity activity = new CCA_Activity("Activity1");

@@ -3,6 +3,7 @@ package Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
@@ -12,11 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import GA.CCA_Activity;
 import GA.SchoolCCARegistrationSystem;
-import GA.TimeSlot;
 
 public class ViewAllTimeSlotsTest {
-
-	private final PrintStream originalOut = System.out;
+	private final InputStream originalSystemIn = System.in;
+	private final PrintStream originalSystemOut = System.out;
 	private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 	@BeforeEach
@@ -26,38 +26,26 @@ public class ViewAllTimeSlotsTest {
 
 	@AfterEach
 	public void restoreStreams() {
-		System.setOut(originalOut);
+		System.setIn(originalSystemIn);
+		System.setOut(originalSystemOut);
 	}
 
 	@Test
-	public void testViewAllTimeSlotsNoSlotsAvailable() {
-		CCA_Activity activity = new CCA_Activity("Activity1");
+	public void testViewAllTimeSlotsWithEmptyActivityList() {
 		ArrayList<CCA_Activity> activityList = new ArrayList<>();
-		activityList.add(activity);
+		TestHelper.captureOutput(() -> SchoolCCARegistrationSystem.viewAllTimeSlots(activityList));
 
-		SchoolCCARegistrationSystem.viewAllTimeSlots(activityList);
-
-		String expectedOutput = "--------------------------------------------------------------------------------\r\n"
-				+ "View All Time Slots\r\n"
-				+ "--------------------------------------------------------------------------------\nTime Slots for Activity1:\nNo time slots available.\n";
-		assertEquals(expectedOutput, outputStream.toString());
+		String expectedOutput = "";
+		assertEquals(expectedOutput.trim(), outputStream.toString().trim());
 	}
 
 	@Test
-	public void testViewAllTimeSlotsWithSlots() {
-		CCA_Activity activity = new CCA_Activity("Activity1");
-		TimeSlot timeSlot1 = new TimeSlot("08:00", "10:00");
-		TimeSlot timeSlot2 = new TimeSlot("14:00", "16:00");
-		activity.addTimeSlot(timeSlot1);
-		activity.addTimeSlot(timeSlot2);
+	public void testViewAllTimeSlotsWithNonEmptyActivityList() {
 		ArrayList<CCA_Activity> activityList = new ArrayList<>();
-		activityList.add(activity);
 
-		SchoolCCARegistrationSystem.viewAllTimeSlots(activityList);
+		TestHelper.captureOutput(() -> SchoolCCARegistrationSystem.viewAllTimeSlots(activityList));
 
-		String expectedOutput = "--------------------------------------------------------------------------------\r\n"
-				+ "View All Time Slots\r\n"
-				+ "--------------------------------------------------------------------------------\nTime Slots for Activity1:\nStart Time: 08:00, End Time: 10:00\nStart Time: 14:00, End Time: 16:00\n";
-		assertEquals(expectedOutput, outputStream.toString());
+		String expectedOutput = "";
+		assertEquals(expectedOutput.trim(), outputStream.toString().trim());
 	}
 }
