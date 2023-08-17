@@ -47,6 +47,10 @@ public class CCA_Activity {
 		return timeSlots;
 	}
 
+	public void setTimeSlots(List<TimeSlot> timeSlots) {
+		this.timeSlots = timeSlots;
+	}
+
 	public boolean addAttendanceEntry(AttendanceEntry attendanceEntry) {
 		if (!attendanceEntries.contains(attendanceEntry)) {
 			attendanceEntries.add(attendanceEntry);
