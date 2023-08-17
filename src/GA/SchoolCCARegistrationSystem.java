@@ -93,10 +93,7 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	// Option 2 Add new activity (CRUD - Create)
-	public static void addActivity(ArrayList<CCA_Activity> activityList) {
-		setHeader("Add an Activity");
-
-		String ccaName = Helper.readString("Enter a new CCA activity name > ");
+	public static void addActivity(ArrayList<CCA_Activity> activityList, String ccaName) {
 
 		for (CCA_Activity activityName : activityList) {
 			if (ccaName.equalsIgnoreCase(activityName.getName())) {
@@ -613,7 +610,9 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 2) {
 				// Add a new item
-				addActivity(activityList);
+				setHeader("Add an Activity");
+				String ccaName = Helper.readString("Enter a new CCA activity name > ");
+				addActivity(activityList, ccaName);
 
 			} else if (option == 3) {
 				// Delete activity
@@ -744,7 +743,9 @@ public class SchoolCCARegistrationSystem {
 
 			} else if (option == 2) {
 				// Add a new item
-				addActivity(activityList);
+				setHeader("Add an Activity");
+				String ccaName = Helper.readString("Enter a new CCA activity name > ");
+				addActivity(activityList, ccaName);
 
 			} else if (option == 3) {
 				// Delete activity

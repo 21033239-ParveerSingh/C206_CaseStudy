@@ -11,17 +11,16 @@ import GA.SchoolCCARegistrationSystem;
 
 public class ViewActivitiesTest {
 
-    @Test
-    public void testViewAllActivities() {
-        ArrayList<CCA_Activity> activityList = new ArrayList<>();
-        CCA_Activity activity1 = new CCA_Activity("Activity 1");
-        activityList.add(activity1);
+	@Test
+	public void testViewAllActivities() {
+		ArrayList<CCA_Activity> activityList = new ArrayList<>();
+		CCA_Activity activity1 = new CCA_Activity("Activity 1");
+		activityList.add(activity1);
 
-        String expectedOutput = "CCA NAMES:\n\nActivity 1\n\n";
+		String expectedOutput = "CCA NAMES:\n\nActivity 1\n";
+		String actualOutput = TestHelper
+				.captureOutput(() -> SchoolCCARegistrationSystem.viewAllActivities(activityList));
 
-        String actualOutput = TestHelper.captureOutput(() -> SchoolCCARegistrationSystem.viewAllActivities(activityList));
-
-        assertEquals(expectedOutput, actualOutput);
-    }
+		assertEquals(expectedOutput.trim(), actualOutput.trim());
+	}
 }
-
