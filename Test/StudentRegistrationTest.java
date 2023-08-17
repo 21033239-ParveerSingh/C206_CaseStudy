@@ -7,69 +7,57 @@ import org.junit.jupiter.api.Test;
 
 public class StudentRegistrationTest {
 
-    @Test
-    public void testStudentAddRegistration() {
-        // Create a student
-        Student student = new Student("student1");
+	@Test
+	public void testStudentAddRegistration() {
 
-        // Create an activity
-        CCA_Activity activity = new CCA_Activity("Activity1");
+		Student student = new Student("student1");
 
-        // Create a time slot
-        TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
+		CCA_Activity activity = new CCA_Activity("Activity1");
 
-        // Student adds a registration
-        student.registerForActivity(activity, timeSlot);
+		TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
 
-        // Perform assertions
-        assertEquals(1, student.getRegisteredActivities().size());
-        RegisteredActivity addedRegistration = student.getRegisteredActivities().get(0);
-        assertEquals(activity, addedRegistration.getActivity());
-        assertEquals(timeSlot, addedRegistration.getTimeSlot());
-    }
+		student.registerForActivity(activity, timeSlot);
 
-    @Test
-    public void testStudentDeleteRegistration() {
-        // Create a student
-        Student student = new Student("student1");
+		assertEquals(1, student.getRegisteredActivities().size());
+		RegisteredActivity addedRegistration = student.getRegisteredActivities().get(0);
+		assertEquals(activity, addedRegistration.getActivity());
+		assertEquals(timeSlot, addedRegistration.getTimeSlot());
+	}
 
-        // Create an activity
-        CCA_Activity activity = new CCA_Activity("Activity1");
+	@Test
+	public void testStudentDeleteRegistration() {
+		// Create a student
+		Student student = new Student("student1");
 
-        // Create a time slot
-        TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
+		CCA_Activity activity = new CCA_Activity("Activity1");
 
-        // Student adds a registration
-        student.registerForActivity(activity, timeSlot);
+		TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
 
-        // Student deletes the registration
-        boolean isDeleted = student.deleteRegistration(activity, timeSlot);
+		student.registerForActivity(activity, timeSlot);
 
-        // Perform assertions
-        assertEquals(true, isDeleted);
-        assertEquals(0, student.getRegisteredActivities().size());
-    }
+		boolean isDeleted = student.deleteRegistration(activity, timeSlot);
 
-    @Test
-    public void testTeacherViewExistingRegistrations() {
-        // Create an activity
-        CCA_Activity activity = new CCA_Activity("Activity1");
+		assertEquals(true, isDeleted);
+		assertEquals(0, student.getRegisteredActivities().size());
+	}
 
-        // Create a time slot
-        TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
+	@Test
+	public void testTeacherViewExistingRegistrations() {
 
-        // Register a student for the activity
-        Student student = new Student("student1");
-        student.registerForActivity(activity, timeSlot);
+		CCA_Activity activity = new CCA_Activity("Activity1");
 
-        // Teacher views existing registrations
-        StringBuilder registrationDetails = new StringBuilder();
-        for (RegisteredActivity reg : student.getRegisteredActivities()) {
-            registrationDetails.append("Student: ").append(student.getUsername()).append(", Activity: ").append(reg.getActivity().getName()).append(", Time Slot: ").append(reg.getTimeSlot()).append("\n");
-        }
+		TimeSlot timeSlot = new TimeSlot("09:00", "11:00");
 
-        // Perform assertions
-        String expectedDetails = "Student: student1, Activity: Activity1, Time Slot: 09:00 - 11:00\n";
-        assertEquals(expectedDetails, registrationDetails.toString());
-    }
+		Student student = new Student("student1");
+		student.registerForActivity(activity, timeSlot);
+
+		StringBuilder registrationDetails = new StringBuilder();
+		for (RegisteredActivity reg : student.getRegisteredActivities()) {
+			registrationDetails.append("Student: ").append(student.getUsername()).append(", Activity: ")
+					.append(reg.getActivity().getName()).append(", Time Slot: ").append(reg.getTimeSlot()).append("\n");
+		}
+
+		String expectedDetails = "Student: student1, Activity: Activity1, Time Slot: 09:00 - 11:00\n";
+		assertEquals(expectedDetails, registrationDetails.toString());
+	}
 }
