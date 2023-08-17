@@ -313,7 +313,6 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static void viewUserAccounts(ArrayList<User> userList) {
-		setHeader("View User Accounts");
 
 		if (userList.isEmpty()) {
 			System.out.println("No user accounts found.");
@@ -325,26 +324,80 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
-	public static void addUserAccount(ArrayList<User> userList, User newUser) {
-		userList.add(newUser);
-		System.out.println("User account added: Username - " + newUser.getUsername() + ", Role - " + newUser.getRole());
+	public static void addUserAccount(ArrayList<User> userList) {
+
+		String username = Helper.readString("Enter the new username: ");
+		String role = Helper.readString("Enter the role for the user (student/teacher/admin): ");
+
+		// Check if the username already exists
+		boolean usernameExists = false;
+		for (User existingUser : userList) {
+			if (existingUser.getUsername().equalsIgnoreCase(username)) {
+				usernameExists = true;
+				break;
+			}
+		}
+
+		if (usernameExists) {
+			System.out.println("Username already exists. Please choose a different username.");
+
+		} else {
+
+			if (role.equalsIgnoreCase("student")) {
+				userList.add(new Student(username));
+			} else if (role.equalsIgnoreCase("teacher")) {
+				userList.add(new Teacher(username));
+			} else if (role.equalsIgnoreCase("admin")) {
+				userList.add(new Administrator(username));
+			} else {
+				System.out.println("Invalid Role for signup");
+			}
+		}
+		System.out.println("User account added: Username - " + username + ", Role - " + role);
 	}
 
 	public static void updateUserAccount(ArrayList<User> userList, String username, String newRole) {
-		for (User user : userList) {
+		for (int i = 0; i < userList.size(); i++) {
+			User user = userList.get(i);
 			if (user.getUsername().equalsIgnoreCase(username)) {
-				user.setRole(newRole);
-				System.out.println(
-						"User account updated: Username - " + user.getUsername() + ", New Role - " + user.getRole());
+				// Remove the existing user object from the list
+				userList.remove(i);
+
+				// Add a new user object of the correct subclass based on the new role
+				if (newRole.equalsIgnoreCase("student")) {
+					userList.add(i, new Student(username));
+				} else if (newRole.equalsIgnoreCase("teacher")) {
+					userList.add(i, new Teacher(username));
+				} else if (newRole.equalsIgnoreCase("admin")) {
+					userList.add(i, new Administrator(username));
+				} else {
+					System.out.println("Invalid Role for update");
+					return; // Exit the method if the role is invalid
+				}
+
+				System.out.println("User account updated: Username - " + username + ", New Role - " + newRole);
 				return;
 			}
 		}
-		System.out.println("User account not found: Username - " + username);
+		System.out.println("User account not found with username: " + username);
 	}
 
 	public static void removeUserAccount(ArrayList<User> userList, String username) {
-		userList.removeIf(user -> user.getUsername().equalsIgnoreCase(username));
-		System.out.println("User account removed: Username - " + username);
+		User userToRemove = null;
+
+		for (User user : userList) {
+			if (user.getUsername().equalsIgnoreCase(username)) {
+				userToRemove = user;
+				break;
+			}
+		}
+
+		if (userToRemove != null) {
+			userList.remove(userToRemove);
+			System.out.println("User account removed with username: " + username);
+		} else {
+			System.out.println("User account not found with username: " + username);
+		}
 	}
 
 	// Extra methods to make the main code a bit easier to read
@@ -486,23 +539,25 @@ public class SchoolCCARegistrationSystem {
 				deleteAttendance(activityList);
 
 			} else if (option == 10) {
+				setHeader("View User Accounts");
 				viewUserAccounts(userList);
 
 			} else if (option == 11) {
 				// Add user account
-				String username = Helper.readString("Enter the new username: ");
-				String role = Helper.readString("Enter the role for the user (student/teacher/admin): ");
-				User newUser = new User(username, role);
-				addUserAccount(userList, newUser);
+				addUserAccount(userList);
 
 			} else if (option == 12) {
 				// Update user account
+				System.out.println();
+				viewUserAccounts(userList);
 				String username = Helper.readString("Enter the username of the account to update: ");
 				String newRole = Helper.readString("Enter the new role for the user (student/teacher/admin): ");
 				updateUserAccount(userList, username, newRole);
 
 			} else if (option == 13) {
 				// Remove user account
+				System.out.println();
+				viewUserAccounts(userList);
 				String username = Helper.readString("Enter the username of the account to remove: ");
 				removeUserAccount(userList, username);
 
