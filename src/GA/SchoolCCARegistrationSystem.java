@@ -13,6 +13,7 @@ public class SchoolCCARegistrationSystem {
 
 	private static ArrayList<User> userList = new ArrayList<User>();
 
+	// Remember to add preset values for each CRUD
 	public static void main(String[] args) {
 
 		// Preset Activity (Remove if not needed after asking faci)
@@ -31,22 +32,45 @@ public class SchoolCCARegistrationSystem {
 		System.out.println(welcome);
 		Helper.line(80, "-");
 
-		User user = login();
+		boolean isLoggedIn = false;
+		User user = null;
 
-		if (user != null) {
-			System.out.println("Logged in as " + user.getUsername() + " (" + user.getRole() + ")");
+		while (true) {
+			int choice = loginOrClose();
 
-			if (user instanceof Student) {
-				handleStudentOption((Student) user, activityList, userList);
-			} else if (user instanceof Teacher) {
-				handleTeacherOption((Teacher) user, activityList, userList);
-			} else if (user instanceof Administrator) {
-				handleAdminOption((Administrator) user, activityList, userList);
+			if (choice == 1) {
+				user = login();
+
+				if (user != null) {
+					isLoggedIn = true;
+				} else {
+					System.out.println("Login failed. Please try again.");
+				}
+			} else if (choice == 2) {
+				System.out.println("\nClosing the application...");
+				break;
+			} else {
+				System.out.println("Invalid choice. Please choose again.");
 			}
-			
-		} else {
-			System.out.println("Login failed. Exiting...");
+
+			if (isLoggedIn) {
+				System.out.println("Logged in as " + user.getUsername() + " (" + user.getRole() + ")");
+
+				if (user instanceof Student) {
+					handleStudentOption((Student) user, activityList, userList);
+				} else if (user instanceof Teacher) {
+					handleTeacherOption((Teacher) user, activityList, userList);
+				} else if (user instanceof Administrator) {
+					handleAdminOption((Administrator) user, activityList, userList);
+				}
+
+				// Reset login status
+				isLoggedIn = false;
+				user = null;
+			}
 		}
+
+		System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
 	}
 
 	// Option 1 View activities (CRUD- Read)
@@ -345,7 +369,7 @@ public class SchoolCCARegistrationSystem {
 			} else if (option == 4) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
-				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
 			} else {
 				System.out.println("Invalid option.");
 			}
@@ -402,7 +426,7 @@ public class SchoolCCARegistrationSystem {
 			} else if (option == 10) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
-				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
 			} else {
 				System.out.println("Invalid option.");
 			}
@@ -480,11 +504,18 @@ public class SchoolCCARegistrationSystem {
 			} else if (option == 14) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
-				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
 			} else {
 				System.out.println("Invalid option");
 			}
 		}
+	}
+
+	public static int loginOrClose() {
+		System.out.println();
+		System.out.println("1. Login");
+		System.out.println("2. Close application");
+		return Helper.readInt("Enter your choice: ");
 	}
 
 	public static void displayMenu(User user) {
