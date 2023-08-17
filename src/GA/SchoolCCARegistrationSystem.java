@@ -414,7 +414,8 @@ public class SchoolCCARegistrationSystem {
 		} else {
 			for (RegisteredActivity activity : registeredActivities) {
 				System.out.println("Activity: " + activity.getActivity().getName() + ", Time Slot: "
-						+ activity.getTimeSlot().getStartTime() + " - " + activity.getTimeSlot().getEndTime());
+						+ activity.getTimeSlot().getStartTime() + " - " + activity.getTimeSlot().getEndTime()
+						+ ", Approval Status: " + activity.getApprovalStatus());
 			}
 		}
 	}
@@ -455,6 +456,32 @@ public class SchoolCCARegistrationSystem {
 			}
 		} else {
 			System.out.println("Activity '" + ccaName + "' not found.");
+		}
+	}
+
+	public static void approveStudentRegistration(Student student) {
+		viewRegisteredActivities(student);
+		int index = Helper.readInt("Enter the index of the activity to approve: ") - 1;
+
+		if (index >= 0 && index < student.getRegisteredActivities().size()) {
+			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
+			registeredActivity.setApprovalStatus("Approved");
+			System.out.println("Registration for " + registeredActivity.getActivity().getName() + " approved.");
+		} else {
+			System.out.println("Invalid index.");
+		}
+	}
+
+	public static void rejectStudentRegistration(Student student) {
+		viewRegisteredActivities(student);
+		int index = Helper.readInt("Enter the index of the activity to reject: ") - 1;
+
+		if (index >= 0 && index < student.getRegisteredActivities().size()) {
+			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
+			registeredActivity.setApprovalStatus("Rejected");
+			System.out.println("Registration for " + registeredActivity.getActivity().getName() + " rejected.");
+		} else {
+			System.out.println("Invalid index.");
 		}
 	}
 
@@ -510,7 +537,7 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 10) {
+		while (option != 12) {
 
 			displayMenu(teacher);
 			option = Helper.readInt("Enter an option > ");
@@ -553,6 +580,49 @@ public class SchoolCCARegistrationSystem {
 				deleteAttendance(activityList);
 
 			} else if (option == 10) {
+				// Approve Student Registration
+				setHeader("Approve Student Registration");
+				int studentIndex = Helper.readInt("Enter the index of the student to approve: ");
+				if (studentIndex >= 0 && studentIndex < activityList.size()) {
+					CCA_Activity selectedActivity = activityList.get(studentIndex);
+					if (selectedActivity instanceof CCA_Activity) {
+						Student student = getStudentFromActivity((CCA_Activity) selectedActivity);
+						if (student != null) {
+							approveStudentRegistration(student);
+						} else {
+							System.out.println("Selected activity does not belong to a student.");
+						}
+
+					} else {
+						System.out.println("Selected activity does not belong to a student.");
+					}
+
+				} else {
+					System.out.println("Invalid student index.");
+				}
+
+			} else if (option == 11) {
+				// Reject Student Registration
+				setHeader("Reject Student Registration");
+				int studentIndex = Helper.readInt("Enter the index of the student to reject: ");
+				if (studentIndex >= 0 && studentIndex < activityList.size()) {
+					CCA_Activity selectedActivity = activityList.get(studentIndex);
+					if (selectedActivity instanceof CCA_Activity) {
+						Student student = getStudentFromActivity((CCA_Activity) selectedActivity);
+						if (student != null) {
+							rejectStudentRegistration(student);
+						} else {
+							System.out.println("Selected activity does not belong to a student.");
+						}
+					} else {
+						System.out.println("Selected activity does not belong to a student.");
+					}
+
+				} else {
+					System.out.println("Invalid student index.");
+				}
+
+			} else if (option == 12) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -715,7 +785,9 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("7. View attendance by CCA");
 		System.out.println("8. Add attendance");
 		System.out.println("9. Delete attendance");
-		System.out.println("10. Log Out");
+		System.out.println("10. Approve Student Registration");
+		System.out.println("11. Reject Student Registration");
+		System.out.println("12. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -825,5 +897,19 @@ public class SchoolCCARegistrationSystem {
 		}
 
 		return true;
+	}
+
+	private static Student getStudentFromActivity(CCA_Activity activity) {
+		for (User user : userList) {
+			if (user instanceof Student) {
+				Student student = (Student) user;
+				for (RegisteredActivity registeredActivity : student.getRegisteredActivities()) {
+					if (registeredActivity.getActivity() == activity) {
+						return student;
+					}
+				}
+			}
+		}
+		return null;
 	}
 }

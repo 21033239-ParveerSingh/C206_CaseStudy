@@ -13,8 +13,9 @@ public class Student extends User {
 	}
 
 	public void registerForActivity(CCA_Activity activity, TimeSlot timeSlot) {
-		RegisteredActivity registeredActivity = new RegisteredActivity(activity, timeSlot);
-		registeredActivities.add(registeredActivity);
+		RegisteredActivity newRegisteredActivity = new RegisteredActivity(activity, timeSlot);
+		newRegisteredActivity.setApprovalStatus("Pending");
+		registeredActivities.add(newRegisteredActivity);
 	}
 
 	public List<RegisteredActivity> getRegisteredActivities() {
