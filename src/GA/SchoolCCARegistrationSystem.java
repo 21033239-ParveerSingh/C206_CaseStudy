@@ -406,25 +406,36 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 4) {
+		while (option != 6) {
 
 			displayMenu(student);
 			option = Helper.readInt("Enter an option > ");
 
 			if (option == 1) {
-				// View all CCAs
-				setHeader("CCA View List");
+				// View available activities
+				setHeader("Available Activities");
 				viewAllActivities(activityList);
-
+				
 			} else if (option == 2) {
 				// View all time slots
 				viewAllTimeSlots(activityList);
-
+				
 			} else if (option == 3) {
 				// View existing attendance
+				setHeader("View attendance by CCA");
 				viewAttendanceByCCA(activityList);
-
+				
 			} else if (option == 4) {
+				// View registered activities
+				setHeader("View registered activities");
+				viewRegisteredActivities(student);
+
+			} else if (option == 5) {
+				// Register for activities
+				setHeader("Register for an activity");
+				registerForActivities(student, activityList);
+
+			} else if (option == 6) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -627,7 +638,9 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("1. View activities");
 		System.out.println("2. View all time slots");
 		System.out.println("3. View attendance by CCA");
-		System.out.println("4. Log Out");
+		System.out.println("4. View registered activities");
+		System.out.println("5. Register for an activity");
+		System.out.println("6. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -737,5 +750,84 @@ public class SchoolCCARegistrationSystem {
 				System.out.println("Student: " + entry.getStudentName() + ", Date: " + formattedDate);
 			}
 		}
+	}
+	
+	public static void registerForActivities(Student student, ArrayList<CCA_Activity> activityList) {
+	    // Display available activities
+	    viewAllActivities(activityList);
+	    
+	    String ccaName = Helper.readString("Enter the name of the activity to register for: ");
+	    CCA_Activity selectedActivity = findActivityByName(activityList, ccaName);
+
+	    if (selectedActivity != null) {
+	        // Display available time slots
+	        setHeader("Available Time Slots for " + selectedActivity.getName());
+	        for (TimeSlot timeSlot : selectedActivity.getTimeSlots()) {
+	            System.out.println("Start Time: " + timeSlot.getStartTime() + ", End Time: " + timeSlot.getEndTime());
+	        }
+	        System.out.println();
+	        String startTime = Helper.readString("Enter start time of the preferred time slot (HH:mm): ");
+	        String endTime = Helper.readString("Enter end time of the preferred time slot (HH:mm): ");
+
+	        if (validateTimeFormat(startTime) && validateTimeFormat(endTime)) {
+	            TimeSlot preferredTimeSlot = new TimeSlot(startTime, endTime);
+
+	            // Check for time slot conflicts
+	            if (!isTimeSlotAvailable(student, selectedActivity, preferredTimeSlot)) {
+	                // Check if the student is already registered for this activity in the specified time slot
+	                if (student.isRegistered(selectedActivity, preferredTimeSlot)) {
+	                    System.out.println("You are already registered for " + selectedActivity.getName() +
+	                            " from " + startTime + " to " + endTime);
+	                } else {
+	                    student.registerForActivity(selectedActivity, preferredTimeSlot);
+	                    System.out.println("Registered for " + selectedActivity.getName() + " from " +
+	                            startTime + " to " + endTime);
+	                }
+	            } else {
+	                System.out.println("The selected time slot conflicts with your existing schedule.");
+	            }
+	        } else {
+	            System.out.println("Invalid time format. Please use HH:mm format.");
+	        }
+	    } else {
+	        System.out.println("Activity '" + ccaName + "' not found.");
+	    }
+	}
+	
+	private static boolean isTimeSlotAvailable(User user, CCA_Activity activity, TimeSlot timeSlot) {
+	    if (user instanceof Student) {
+	        Student student = (Student) user;
+	        List<RegisteredActivity> registeredActivities = student.getRegisteredActivities();
+
+	        for (RegisteredActivity registeredActivity : registeredActivities) {
+	            if (registeredActivity.getTimeSlot().conflictsWith(timeSlot)) {
+	                return false;
+	            }
+	        }
+	    }
+
+	    // Check if the new time slot conflicts with any of the activity's existing time slots
+	    for (TimeSlot existingTimeSlot : activity.getTimeSlots()) {
+	        if (existingTimeSlot.conflictsWith(timeSlot)) {
+	            return false;
+	        }
+	    }
+
+	    return true;
+	}
+
+	
+	public static void viewRegisteredActivities(Student student) {
+	    System.out.println("Registered Activities for " + student.getUsername() + ":");
+	    List<RegisteredActivity> registeredActivities = student.getRegisteredActivities();
+
+	    if (registeredActivities.isEmpty()) {
+	        System.out.println("No registered activities.");
+	    } else {
+	        for (RegisteredActivity activity : registeredActivities) {
+	            System.out.println("Activity: " + activity.getActivity().getName() +
+	                    ", Time Slot: " + activity.getTimeSlot().getStartTime() + " - " + activity.getTimeSlot().getEndTime());
+	        }
+	    }
 	}
 }

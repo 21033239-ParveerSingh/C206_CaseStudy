@@ -1,5 +1,7 @@
 package GA;
 
+import java.time.LocalTime;
+
 public class TimeSlot {
 	private String startTime;
 	private String endTime;
@@ -23,5 +25,17 @@ public class TimeSlot {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public boolean conflictsWith(TimeSlot otherTimeSlot) {
+		LocalTime thisStartTime = LocalTime.parse(startTime);
+		LocalTime thisEndTime = LocalTime.parse(endTime);
+		LocalTime otherStartTime = LocalTime.parse(otherTimeSlot.getStartTime());
+		LocalTime otherEndTime = LocalTime.parse(otherTimeSlot.getEndTime());
+
+		// Check for conflicts
+		return (thisStartTime.isBefore(otherEndTime) && thisEndTime.isAfter(otherStartTime))
+				|| (otherStartTime.isBefore(thisEndTime) && otherEndTime.isAfter(thisStartTime))
+				|| thisStartTime.equals(otherStartTime) || thisEndTime.equals(otherEndTime);
 	}
 }
