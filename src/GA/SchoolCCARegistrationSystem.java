@@ -460,7 +460,6 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static void approveStudentRegistration(Student student, int index) {
-		index = index - 1;
 
 		if (index >= 0 && index < student.getRegisteredActivities().size()) {
 			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
@@ -473,7 +472,6 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static void rejectStudentRegistration(Student student, int index) {
-		index = index - 1;
 
 		if (index >= 0 && index < student.getRegisteredActivities().size()) {
 			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
@@ -537,7 +535,7 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 11) {
+		while (option != 12) {
 
 			displayMenu(teacher);
 			option = Helper.readInt("Enter an option > ");
@@ -580,35 +578,50 @@ public class SchoolCCARegistrationSystem {
 				deleteAttendance(activityList);
 
 			} else if (option == 10) {
-				// Approve or Reject Student Registration
-				setHeader("Approve or Reject Student Registration");
+				// View current student registrations
+				boolean hasPendingApplications = viewStudentApplications(userList);
 
-				// Display list of students
-				viewStudentApplications(userList);
-
-				Helper.line(80, "-");
-				int studentIndex = Helper.readInt("Enter the index of the student to review applications: ");
-				Helper.line(80, "-");
-				if (studentIndex >= 0 && studentIndex < userList.size()) {
-					User selectedUser = userList.get(studentIndex);
-					if (selectedUser instanceof Student) {
-						Student student = (Student) selectedUser;
-						int action = Helper.readInt("Enter 1 to approve or 2 to reject: ");
-						if (action == 1) {
-							approveStudentRegistration(student, action);
-						} else if (action == 2) {
-							rejectStudentRegistration(student, action);
-						} else {
-							System.out.println("Invalid action.");
-						}
-					} else {
-						System.out.println("Selected user is not a student.");
-					}
+				if (hasPendingApplications) {
+					setHeader("View current student Registrations");
+					viewStudentApplications(userList);
 				} else {
-					System.out.println("Invalid student index.");
+					System.out.println("No students have pending applications.");
 				}
 
 			} else if (option == 11) {
+				// Approve or Reject Student Registration
+				setHeader("Approve or Reject Student Registration");
+
+				// Display list of students with pending applications
+				boolean hasPendingApplications = viewStudentApplications(userList);
+
+				if (hasPendingApplications) {
+					Helper.line(80, "-");
+					int studentIndex = Helper.readInt("Enter the index of the student to review applications: ");
+					Helper.line(80, "-");
+					if (studentIndex >= 0 && studentIndex < userList.size()) {
+						User selectedUser = userList.get(studentIndex);
+						if (selectedUser instanceof Student) {
+							Student student = (Student) selectedUser;
+							int action = Helper.readInt("Enter 1 to approve or 2 to reject: ");
+							if (action == 1) {
+								approveStudentRegistration(student, studentIndex);
+							} else if (action == 2) {
+								rejectStudentRegistration(student, studentIndex);
+							} else {
+								System.out.println("Invalid action.");
+							}
+						} else {
+							System.out.println("Selected user is not a student.");
+						}
+					} else {
+						System.out.println("Invalid student index.");
+					}
+				} else {
+					System.out.println("No students have pending applications.");
+				}
+
+			} else if (option == 12) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -771,8 +784,9 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("7. View attendance by CCA");
 		System.out.println("8. Add attendance");
 		System.out.println("9. Delete attendance");
-		System.out.println("10. Approve or Reject Student Registration");
-		System.out.println("11. Log Out");
+		System.out.println("10. View current student registrations");
+		System.out.println("11. Approve or Reject Student Registration");
+		System.out.println("12. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -884,22 +898,29 @@ public class SchoolCCARegistrationSystem {
 		return true;
 	}
 
-	private static void viewStudentApplications(ArrayList<User> userList) {
-		System.out.println("List of Student Applications:");
+	private static boolean viewStudentApplications(ArrayList<User> userList) {
+		boolean hasPendingApplications = false;
+		System.out.println("List of Students with Pending Applications:");
 		for (User user : userList) {
 			if (user instanceof Student) {
 				Student student = (Student) user;
-				System.out.println(userList.indexOf(user) + ": " + student.getUsername());
-				for (RegisteredActivity registeredActivity : student.getRegisteredActivities()) {
-					CCA_Activity activity = registeredActivity.getActivity();
-					TimeSlot timeSlot = registeredActivity.getTimeSlot();
-					String approvalStatus = registeredActivity.getApprovalStatus();
-					System.out.println("    Activity: " + activity.getName());
-					System.out.println("    Time Slot: " + timeSlot.toString());
-					System.out.println("    Approval Status: " + approvalStatus);
+				if (!student.getRegisteredActivities().isEmpty()) {
+					for (RegisteredActivity registeredActivity : student.getRegisteredActivities()) {
+						String approvalStatus = registeredActivity.getApprovalStatus();
+						if (approvalStatus.equalsIgnoreCase("Pending")) {
+							hasPendingApplications = true;
+							CCA_Activity activity = registeredActivity.getActivity();
+							TimeSlot timeSlot = registeredActivity.getTimeSlot();
+							System.out.println(userList.indexOf(user) + ": " + student.getUsername());
+							System.out.println("    Activity: " + activity.getName());
+							System.out.println("    Time Slot: " + timeSlot.toString());
+							System.out.println("    Approval Status: " + approvalStatus);
+						}
+					}
 				}
 			}
 		}
+		return hasPendingApplications;
 	}
 
 	private static Student getStudentFromActivity(CCA_Activity activity) {
