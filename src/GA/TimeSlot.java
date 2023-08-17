@@ -38,4 +38,9 @@ public class TimeSlot {
 				|| (otherStartTime.isBefore(thisEndTime) && otherEndTime.isAfter(thisStartTime))
 				|| thisStartTime.equals(otherStartTime) || thisEndTime.equals(otherEndTime);
 	}
+
+	@Override
+	public String toString() {
+		return startTime + " - " + endTime;
+	}
 }

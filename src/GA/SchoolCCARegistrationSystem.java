@@ -459,27 +459,27 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
-	public static void approveStudentRegistration(Student student) {
-		viewRegisteredActivities(student);
-		int index = Helper.readInt("Enter the index of the activity to approve: ") - 1;
+	public static void approveStudentRegistration(Student student, int index) {
+		index = index - 1;
 
 		if (index >= 0 && index < student.getRegisteredActivities().size()) {
 			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
 			registeredActivity.setApprovalStatus("Approved");
-			System.out.println("Registration for " + registeredActivity.getActivity().getName() + " approved.");
+			System.out.println(student.getUsername() + "'s registration for "
+					+ registeredActivity.getActivity().getName() + " approved.");
 		} else {
 			System.out.println("Invalid index.");
 		}
 	}
 
-	public static void rejectStudentRegistration(Student student) {
-		viewRegisteredActivities(student);
-		int index = Helper.readInt("Enter the index of the activity to reject: ") - 1;
+	public static void rejectStudentRegistration(Student student, int index) {
+		index = index - 1;
 
 		if (index >= 0 && index < student.getRegisteredActivities().size()) {
 			RegisteredActivity registeredActivity = student.getRegisteredActivities().get(index);
 			registeredActivity.setApprovalStatus("Rejected");
-			System.out.println("Registration for " + registeredActivity.getActivity().getName() + " rejected.");
+			System.out.println(student.getUsername() + "'s registration for "
+					+ registeredActivity.getActivity().getName() + " rejected.");
 		} else {
 			System.out.println("Invalid index.");
 		}
@@ -537,7 +537,7 @@ public class SchoolCCARegistrationSystem {
 
 		int option = 0;
 
-		while (option != 12) {
+		while (option != 11) {
 
 			displayMenu(teacher);
 			option = Helper.readInt("Enter an option > ");
@@ -580,49 +580,35 @@ public class SchoolCCARegistrationSystem {
 				deleteAttendance(activityList);
 
 			} else if (option == 10) {
-				// Approve Student Registration
-				setHeader("Approve Student Registration");
-				int studentIndex = Helper.readInt("Enter the index of the student to approve: ");
-				if (studentIndex >= 0 && studentIndex < activityList.size()) {
-					CCA_Activity selectedActivity = activityList.get(studentIndex);
-					if (selectedActivity instanceof CCA_Activity) {
-						Student student = getStudentFromActivity((CCA_Activity) selectedActivity);
-						if (student != null) {
-							approveStudentRegistration(student);
+				// Approve or Reject Student Registration
+				setHeader("Approve or Reject Student Registration");
+
+				// Display list of students
+				viewStudentApplications(userList);
+
+				Helper.line(80, "-");
+				int studentIndex = Helper.readInt("Enter the index of the student to review applications: ");
+				Helper.line(80, "-");
+				if (studentIndex >= 0 && studentIndex < userList.size()) {
+					User selectedUser = userList.get(studentIndex);
+					if (selectedUser instanceof Student) {
+						Student student = (Student) selectedUser;
+						int action = Helper.readInt("Enter 1 to approve or 2 to reject: ");
+						if (action == 1) {
+							approveStudentRegistration(student, action);
+						} else if (action == 2) {
+							rejectStudentRegistration(student, action);
 						} else {
-							System.out.println("Selected activity does not belong to a student.");
+							System.out.println("Invalid action.");
 						}
-
 					} else {
-						System.out.println("Selected activity does not belong to a student.");
+						System.out.println("Selected user is not a student.");
 					}
-
 				} else {
 					System.out.println("Invalid student index.");
 				}
 
 			} else if (option == 11) {
-				// Reject Student Registration
-				setHeader("Reject Student Registration");
-				int studentIndex = Helper.readInt("Enter the index of the student to reject: ");
-				if (studentIndex >= 0 && studentIndex < activityList.size()) {
-					CCA_Activity selectedActivity = activityList.get(studentIndex);
-					if (selectedActivity instanceof CCA_Activity) {
-						Student student = getStudentFromActivity((CCA_Activity) selectedActivity);
-						if (student != null) {
-							rejectStudentRegistration(student);
-						} else {
-							System.out.println("Selected activity does not belong to a student.");
-						}
-					} else {
-						System.out.println("Selected activity does not belong to a student.");
-					}
-
-				} else {
-					System.out.println("Invalid student index.");
-				}
-
-			} else if (option == 12) {
 				System.out.println("\nLogging out...");
 				System.out.println("\nSuccessfully Logged out");
 				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
@@ -785,9 +771,8 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("7. View attendance by CCA");
 		System.out.println("8. Add attendance");
 		System.out.println("9. Delete attendance");
-		System.out.println("10. Approve Student Registration");
-		System.out.println("11. Reject Student Registration");
-		System.out.println("12. Log Out");
+		System.out.println("10. Approve or Reject Student Registration");
+		System.out.println("11. Log Out");
 		Helper.line(80, "-");
 	}
 
@@ -897,6 +882,24 @@ public class SchoolCCARegistrationSystem {
 		}
 
 		return true;
+	}
+
+	private static void viewStudentApplications(ArrayList<User> userList) {
+		System.out.println("List of Student Applications:");
+		for (User user : userList) {
+			if (user instanceof Student) {
+				Student student = (Student) user;
+				System.out.println(userList.indexOf(user) + ": " + student.getUsername());
+				for (RegisteredActivity registeredActivity : student.getRegisteredActivities()) {
+					CCA_Activity activity = registeredActivity.getActivity();
+					TimeSlot timeSlot = registeredActivity.getTimeSlot();
+					String approvalStatus = registeredActivity.getApprovalStatus();
+					System.out.println("    Activity: " + activity.getName());
+					System.out.println("    Time Slot: " + timeSlot.toString());
+					System.out.println("    Approval Status: " + approvalStatus);
+				}
+			}
+		}
 	}
 
 	private static Student getStudentFromActivity(CCA_Activity activity) {
