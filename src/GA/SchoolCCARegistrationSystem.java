@@ -83,6 +83,8 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!\n");
 	}
 
+	// ===================== Activities =====================
+
 	// Option 1 View activities (CRUD- Read)
 	public static void viewAllActivities(ArrayList<CCA_Activity> activityList) {
 		String output = String.format("CCA NAMES:\n\n");
@@ -108,7 +110,7 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("Activity '" + ccaName + "' has been added.");
 	}
 
-	// Option 3 Delete an Activity (CRUD -
+	// Option 3 Delete an Activity (CRUD - Delete)
 	public static void deleteActivity(ArrayList<CCA_Activity> activityList) {
 		Helper.line(80, "-");
 		System.out.println("Delete a CCA Activity");
@@ -123,6 +125,8 @@ public class SchoolCCARegistrationSystem {
 			System.out.println("Activity '" + ccaName + "' not found or couldn't be deleted.");
 		}
 	}
+
+	// ===================== Time Slots =====================
 
 	public static void viewAllTimeSlots(ArrayList<CCA_Activity> activityList) {
 		setHeader("View All Time Slots");
@@ -225,6 +229,8 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
+	// ===================== Attendance =====================
+
 	public static void viewAttendanceByCCA(ArrayList<CCA_Activity> activityList) {
 		setHeader("View attendance by CCA");
 
@@ -317,6 +323,8 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
+	// ===================== User Accounts =====================
+
 	public static void viewUserAccounts(ArrayList<User> userList) {
 
 		if (userList.isEmpty()) {
@@ -404,6 +412,8 @@ public class SchoolCCARegistrationSystem {
 			System.out.println("User account not found with username: " + username);
 		}
 	}
+
+	// ===================== Registrations =====================
 
 	public static void viewRegisteredActivities(Student student) {
 		System.out.println("Registered Activities for " + student.getUsername() + ":");
@@ -536,9 +546,7 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
-	// =============================================================== Extra methods
-	// to make the main code a bit easier to read
-	// ===============================================================
+	// ====== Extra methods to make the main code a bit easier to read ======
 	public static void handleStudentOption(Student student, ArrayList<CCA_Activity> activityList,
 			ArrayList<User> userList) {
 
