@@ -10,67 +10,42 @@ import java.util.Date;
 import java.util.List;
 
 public class SchoolCCARegistrationSystem {
+
+	private static ArrayList<User> userList = new ArrayList<User>();
+
 	public static void main(String[] args) {
 
 		// Preset Activity (Remove if not needed after asking faci)
 		ArrayList<CCA_Activity> activityList = new ArrayList<CCA_Activity>();
 		activityList.add(new CCA_Activity("Volleyball"));
 
-		int option = 0;
+		// Preset User Accounts
+		userList.add(new Student("alice"));
+		userList.add(new Teacher("bob"));
+		userList.add(new Administrator("admin"));
 
 		// Welcome message
 		String welcome = "";
 		Helper.line(80, "-");
 		welcome += "Welcome to the School CCA Registration System!";
 		System.out.println(welcome);
+		Helper.line(80, "-");
 
-		while (option != 10) {
+		User user = login();
 
-			menu();
-			option = Helper.readInt("Enter an option > ");
+		if (user != null) {
+			System.out.println("Logged in as " + user.getUsername() + " (" + user.getRole() + ")");
 
-			if (option == 1) {
-				// View all CCAs
-				setHeader("CCA View List");
-				viewAllActivities(activityList);
-
-			} else if (option == 2) {
-				// Add a new item
-				addActivity(activityList);
-
-			} else if (option == 3) {
-				// Delete activity
-				deleteActivity(activityList);
-
-			} else if (option == 4) {
-				// View all time slots
-				viewAllTimeSlots(activityList);
-
-			} else if (option == 5) {
-				// Manage time slots
-				addTimeSlots(activityList);
-
-			} else if (option == 6) {
-				// Delete time slot
-				deleteTimeSlot(activityList);
-
-			} else if (option == 7) {
-				// View existing attendance
-				viewAttendanceByCCA(activityList);
-
-			} else if (option == 8) {
-				// Add attendance
-				addAttendance(activityList);
-
-			} else if (option == 9) {
-				// Delete attendance
-				deleteAttendance(activityList);
-
-			} else if (option == 10) {
-				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
-			} else {
-				System.out.println("Invalid option");
+			if (user instanceof Student) {
+				handleStudentOption((Student) user, activityList, userList);
+			} else if (user instanceof Teacher) {
+				handleTeacherOption((Teacher) user, activityList, userList);
+			} else if (user instanceof Administrator) {
+				handleAdminOption((Administrator) user, activityList, userList);
 			}
+			
+		} else {
+			System.out.println("Login failed. Exiting...");
 		}
 	}
 
@@ -308,10 +283,246 @@ public class SchoolCCARegistrationSystem {
 		}
 	}
 
+	public static void viewUserAccounts(ArrayList<User> userList) {
+		setHeader("View User Accounts");
+
+		if (userList.isEmpty()) {
+			System.out.println("No user accounts found.");
+		} else {
+			System.out.println("User Accounts:");
+			for (User user : userList) {
+				System.out.println("Username: " + user.getUsername() + ", Role: " + user.getRole());
+			}
+		}
+	}
+
+	public static void addUserAccount(ArrayList<User> userList, User newUser) {
+		userList.add(newUser);
+		System.out.println("User account added: Username - " + newUser.getUsername() + ", Role - " + newUser.getRole());
+	}
+
+	public static void updateUserAccount(ArrayList<User> userList, String username, String newRole) {
+		for (User user : userList) {
+			if (user.getUsername().equalsIgnoreCase(username)) {
+				user.setRole(newRole);
+				System.out.println(
+						"User account updated: Username - " + user.getUsername() + ", New Role - " + user.getRole());
+				return;
+			}
+		}
+		System.out.println("User account not found: Username - " + username);
+	}
+
+	public static void removeUserAccount(ArrayList<User> userList, String username) {
+		userList.removeIf(user -> user.getUsername().equalsIgnoreCase(username));
+		System.out.println("User account removed: Username - " + username);
+	}
+
 	// Extra methods to make the main code a bit easier to read
-	public static void menu() {
+	public static void handleStudentOption(Student student, ArrayList<CCA_Activity> activityList,
+			ArrayList<User> userList) {
+
+		int option = 0;
+
+		while (option != 4) {
+
+			displayMenu(student);
+			option = Helper.readInt("Enter an option > ");
+
+			if (option == 1) {
+				// View all CCAs
+				setHeader("CCA View List");
+				viewAllActivities(activityList);
+
+			} else if (option == 2) {
+				// View all time slots
+				viewAllTimeSlots(activityList);
+
+			} else if (option == 3) {
+				// View existing attendance
+				viewAttendanceByCCA(activityList);
+
+			} else if (option == 4) {
+				System.out.println("\nLogging out...");
+				System.out.println("\nSuccessfully Logged out");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+			} else {
+				System.out.println("Invalid option.");
+			}
+		}
+	}
+
+	public static void handleTeacherOption(Teacher teacher, ArrayList<CCA_Activity> activityList,
+			ArrayList<User> userList) {
+
+		int option = 0;
+
+		while (option != 10) {
+
+			displayMenu(teacher);
+			option = Helper.readInt("Enter an option > ");
+
+			if (option == 1) {
+				// View all CCAs
+				setHeader("CCA View List");
+				viewAllActivities(activityList);
+
+			} else if (option == 2) {
+				// Add a new item
+				addActivity(activityList);
+
+			} else if (option == 3) {
+				// Delete activity
+				deleteActivity(activityList);
+
+			} else if (option == 4) {
+				// View all time slots
+				viewAllTimeSlots(activityList);
+
+			} else if (option == 5) {
+				// Manage time slots
+				addTimeSlots(activityList);
+
+			} else if (option == 6) {
+				// Delete time slot
+				deleteTimeSlot(activityList);
+
+			} else if (option == 7) {
+				// View existing attendance
+				viewAttendanceByCCA(activityList);
+
+			} else if (option == 8) {
+				// Add attendance
+				addAttendance(activityList);
+
+			} else if (option == 9) {
+				// Delete attendance
+				deleteAttendance(activityList);
+
+			} else if (option == 10) {
+				System.out.println("\nLogging out...");
+				System.out.println("\nSuccessfully Logged out");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+			} else {
+				System.out.println("Invalid option.");
+			}
+		}
+	}
+
+	public static void handleAdminOption(Administrator admin, ArrayList<CCA_Activity> activityList,
+			ArrayList<User> userList) {
+
+		int option = 0;
+
+		while (option != 14) {
+
+			displayMenu(admin);
+			option = Helper.readInt("Enter an option > ");
+
+			if (option == 1) {
+				// View all CCAs
+				setHeader("CCA View List");
+				viewAllActivities(activityList);
+
+			} else if (option == 2) {
+				// Add a new item
+				addActivity(activityList);
+
+			} else if (option == 3) {
+				// Delete activity
+				deleteActivity(activityList);
+
+			} else if (option == 4) {
+				// View all time slots
+				viewAllTimeSlots(activityList);
+
+			} else if (option == 5) {
+				// Manage time slots
+				addTimeSlots(activityList);
+
+			} else if (option == 6) {
+				// Delete time slot
+				deleteTimeSlot(activityList);
+
+			} else if (option == 7) {
+				// View existing attendance
+				viewAttendanceByCCA(activityList);
+
+			} else if (option == 8) {
+				// Add attendance
+				addAttendance(activityList);
+
+			} else if (option == 9) {
+				// Delete attendance
+				deleteAttendance(activityList);
+
+			} else if (option == 10) {
+				viewUserAccounts(userList);
+
+			} else if (option == 11) {
+				// Add user account
+				String username = Helper.readString("Enter the new username: ");
+				String role = Helper.readString("Enter the role for the user (student/teacher/admin): ");
+				User newUser = new User(username, role);
+				addUserAccount(userList, newUser);
+
+			} else if (option == 12) {
+				// Update user account
+				String username = Helper.readString("Enter the username of the account to update: ");
+				String newRole = Helper.readString("Enter the new role for the user (student/teacher/admin): ");
+				updateUserAccount(userList, username, newRole);
+
+			} else if (option == 13) {
+				// Remove user account
+				String username = Helper.readString("Enter the username of the account to remove: ");
+				removeUserAccount(userList, username);
+
+			} else if (option == 14) {
+				System.out.println("\nLogging out...");
+				System.out.println("\nSuccessfully Logged out");
+				System.out.println("\nThank you for using the School CCA Registration System. Have a nice Day!");
+			} else {
+				System.out.println("Invalid option");
+			}
+		}
+	}
+
+	public static void displayMenu(User user) {
+		if (user instanceof Student) {
+			studentMenu(user);
+		} else if (user instanceof Teacher) {
+			teacherMenu(user);
+		} else if (user instanceof Administrator) {
+			adminMenu(user);
+		}
+	}
+
+	public static User login() {
+		String username = Helper.readString("Enter your username: ");
+		String role = Helper.readString("Enter your role (student/teacher/admin): ");
+
+		for (User user : userList) {
+			if (user.getUsername().equalsIgnoreCase(username) && user.getRole().equalsIgnoreCase(role)) {
+				return user;
+			}
+		}
+
+		System.out.println("Invalid username or role.");
+		return null;
+	}
+
+	public static void studentMenu(User user) {
 		setHeader("CCA Activities");
-		System.out.println("1. View activites");
+		System.out.println("1. View activities");
+		System.out.println("2. View all time slots");
+		System.out.println("3. View attendance by CCA");
+		System.out.println("4. Log Out");
+		Helper.line(80, "-");
+	}
+
+	public static void teacherMenu(User user) {
+		setHeader("CCA Activities");
+		System.out.println("1. View activities");
 		System.out.println("2. Add an activity");
 		System.out.println("3. Delete an activity");
 		System.out.println("4. View all time slots");
@@ -320,7 +531,26 @@ public class SchoolCCARegistrationSystem {
 		System.out.println("7. View attendance by CCA");
 		System.out.println("8. Add attendance");
 		System.out.println("9. Delete attendance");
-		System.out.println("10. Quit");
+		System.out.println("10. Log Out");
+		Helper.line(80, "-");
+	}
+
+	public static void adminMenu(User user) {
+		setHeader("CCA Activities");
+		System.out.println("1. View activities");
+		System.out.println("2. Add an activity");
+		System.out.println("3. Delete an activity");
+		System.out.println("4. View all time slots");
+		System.out.println("5. Add time Slots");
+		System.out.println("6. Delete Time Slot");
+		System.out.println("7. View attendance by CCA");
+		System.out.println("8. Add attendance");
+		System.out.println("9. Delete attendance");
+		System.out.println("10. View user accounts");
+		System.out.println("11. Add user account");
+		System.out.println("12. Update user account");
+		System.out.println("13. Remove user account");
+		System.out.println("14. Log Out");
 		Helper.line(80, "-");
 	}
 
