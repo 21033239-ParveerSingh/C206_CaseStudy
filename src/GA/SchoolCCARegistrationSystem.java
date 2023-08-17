@@ -16,7 +16,6 @@ public class SchoolCCARegistrationSystem {
 	// Remember to add preset values for each CRUD
 	public static void main(String[] args) {
 
-		// Preset Activity (Remove if not needed after asking faci)
 		ArrayList<CCA_Activity> activityList = new ArrayList<CCA_Activity>();
 		activityList.add(new CCA_Activity("Volleyball"));
 
@@ -43,12 +42,18 @@ public class SchoolCCARegistrationSystem {
 
 				if (user != null) {
 					isLoggedIn = true;
+
 				} else {
 					System.out.println("Login failed. Please try again.");
 				}
+
 			} else if (choice == 2) {
+				signup();
+
+			} else if (choice == 3) {
 				System.out.println("\nClosing the application...");
 				break;
+
 			} else {
 				System.out.println("Invalid choice. Please choose again.");
 			}
@@ -512,10 +517,30 @@ public class SchoolCCARegistrationSystem {
 	}
 
 	public static int loginOrClose() {
-		System.out.println();
 		System.out.println("1. Login");
-		System.out.println("2. Close application");
+		System.out.println("2. Sign Up");
+		System.out.println("3. Close application");
 		return Helper.readInt("Enter your choice: ");
+	}
+
+	public static void signup() {
+		String username = Helper.readString("Enter your desired username: ");
+		String role = Helper.readString("Enter your desired role (student/teacher/admin): ");
+
+		if (role.equalsIgnoreCase("student")) {
+			userList.add(new Student(username));
+
+		} else if (role.equalsIgnoreCase("teacher")) {
+			userList.add(new Teacher(username));
+
+		} else if (role.equalsIgnoreCase("admin")) {
+			userList.add(new Administrator(username));
+
+		} else {
+			System.out.println("Invalid Role for signup");
+		}
+
+		System.out.println("User account created: Username - " + username + ", Role - " + role);
 	}
 
 	public static void displayMenu(User user) {
